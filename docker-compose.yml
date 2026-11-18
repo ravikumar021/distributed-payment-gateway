@@ -1,8 +1,18 @@
-version: '3'
 services:
-  kafka:
-    image: bitnami/kafka:latest
-  redis:
-    image: redis
-  postgres:
-    image: postgres
+  api:
+    build: .
+    command: api
+    environment:
+      PAYMENT_ADDR: 0.0.0.0:8080
+      PAYMENT_API_KEYS: '${PAYMENT_API_KEYS:?Set PAYMENT_API_KEYS to a JSON token-to-merchant mapping}'
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - payments:/data
+  worker:
+    build: .
+    command: worker
+    volumes:
+      - payments:/data
+volumes:
+  payments:
